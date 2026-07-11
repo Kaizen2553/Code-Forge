@@ -1,4 +1,5 @@
 import {Worker} from 'bullmq';
+import path from 'path';
 import { connection } from '../config/redis.js';
 import { createSourceFile , cleanup } from '../services/fileService.js';
 import { executePython } from '../services/executionService.js';
@@ -35,5 +36,5 @@ worker.on('completed',(job)=>{
 });
 
 worker.on('failed',(job,err)=>{
-    console.log(`job ${job.id} failed`);
+    throw err;
 });
