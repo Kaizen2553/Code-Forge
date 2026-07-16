@@ -1,4 +1,4 @@
-import { executionQueue } from "../queues/executionQueue.js";
+import { executionQueue,queueEvents } from "../queues/executionQueue.js";
 export const executeCode = async (req,res)=>{
     try{
         const {language,code,input} = req.body;
@@ -14,10 +14,16 @@ export const executeCode = async (req,res)=>{
            code,
            input:input||''
         });
+
+       
+
+        const result = await job.waitUntilFinished(queueEvents);
    
+        console.log(result);
+
         return res.status(200).json({
            success:true,
-           jobId: job.id
+           result:result,
         });
     }catch(error){
         console.log('error occured in executeCode controller');
