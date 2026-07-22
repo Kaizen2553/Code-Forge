@@ -1,14 +1,24 @@
 import {spawn} from 'child_process';
 import path from 'path';
-export const executePython = async (filePath)=>{
+import { compileCpp, runCpp } from "./compilers/cpp.js";
+export const executePython = async (filePath,input)=>{
     //here a promise is declared because the function spawn does not return a promise it returns an object now promise is needed because the execution itself is asynchronous to deal wht that we declare a promise which will be resolved if the execution is smooth or will fail and be rejected
     return new Promise((resolve,reject)=>{
         const parent = path.dirname(filePath);
+        //console.log("INPUT:", JSON.stringify(input));
+        const child = spawn("docker",["run","-i","--rm","-v",`${parent}:/app`,"python-runner","python3",path.basename(filePath)]);
+        //-i means interactive and it tells docker to keep the stdin open and forward the input to the process
 
-        const child = spawn("docker",["run","--rm","-v",`${parent}:/app`,"python-runner","python3",path.basename(filePath)]);
+        //-V HERE MEANS MOUNT WHICH IS TO SHARE A SPECIFIC CONTAINER WITH THE CONTAINER IE IT CAN ACCESS THE CONTENTS OF THAT FILE
 
         let stdout = "";
         let stderr = "";
+
+        // console.log("Input received:", JSON.stringify(input));
+       if(input){
+           child.stdin.write(input);
+       }
+        child.stdin.end();
 
         child.stdout.on('data',(data)=>{
             stdout+=data.toString();
@@ -21,7 +31,7 @@ export const executePython = async (filePath)=>{
         child.on('error',(error)=>{
             reject(error);
         })
-
+        //the close event is emitted when the execution of that code is finised
         child.on('close',(code)=>{
             resolve({
                 stdout,
@@ -31,3 +41,16 @@ export const executePython = async (filePath)=>{
         })
     })
 }
+
+
+
+
+export const executeCpp = async (filePath, input) => {
+    const compileResult = await compileCpp(filePath);
+
+    if (compileResult.exitCode !== 0) {
+        return compileResult;
+    }
+
+    return await runCpp(filePath, input);
+};

@@ -18,6 +18,7 @@ export const executeCode = async (req,res)=>{
        
 
         const result = await job.waitUntilFinished(queueEvents);
+        //lets say there are n jobs in queue each will run a copy of this route and they all will wait at this line and therefore promises will accumulate as new requests are made.
    
         console.log(result);
 

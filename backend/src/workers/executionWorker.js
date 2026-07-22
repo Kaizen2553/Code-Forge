@@ -3,20 +3,36 @@ import path from 'path';
 import { connection } from '../config/redis.js';
 import { createSourceFile , cleanup } from '../services/fileService.js';
 import { executePython } from '../services/executionService.js';
+import { executeCpp } from '../services/executionService.js';
+
 //so basically the worker here uses the redis connection to talk to redis and send commands which will be used to manipulate the execution queue and extract and perform jobs
+
+const handlers = {
+    "cpp":executeCpp,
+    "python":executePython,
+}
 const worker = new Worker(
     "execution",
     async (job)=>{
         let filePath;
-        const {language,code} = job.data;
+        const {language,code,input} = job.data;
         try{
             const result = await createSourceFile(language,code);
             filePath = result.filePath;
 
-            const output = await executePython(filePath);
+            const handler = handlers[language];
+
+            if(!handler){
+                throw new Error("unsupported language");
+            }
+
+            
+            
+            const output = await handler(filePath,input);
             
             console.log(output);
             return output;
+            //here when worker returns the result it is not talking to express its actually returning it to bullmq which marks the job as completed and the publishes a completed event
         }catch(err){
             throw err;
         }finally{
