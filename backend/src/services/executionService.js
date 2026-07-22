@@ -1,6 +1,7 @@
 import {spawn} from 'child_process';
 import path from 'path';
 import { compileCpp, runCpp } from "./compilers/cpp.js";
+import {compileJava,runJava} from './compilers/java.js'
 export const executePython = async (filePath,input)=>{
     //here a promise is declared because the function spawn does not return a promise it returns an object now promise is needed because the execution itself is asynchronous to deal wht that we declare a promise which will be resolved if the execution is smooth or will fail and be rejected
     return new Promise((resolve,reject)=>{
@@ -53,4 +54,15 @@ export const executeCpp = async (filePath, input) => {
     }
 
     return await runCpp(filePath, input);
+};
+
+
+export const executeJava = async (filePath, input) => {
+    const compileResult = await compileJava(filePath);
+
+    if (compileResult.exitCode !== 0) {
+        return compileResult;
+    }
+
+    return await runJava(filePath, input);
 };

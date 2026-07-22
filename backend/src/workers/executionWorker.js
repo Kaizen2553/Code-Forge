@@ -3,13 +3,14 @@ import path from 'path';
 import { connection } from '../config/redis.js';
 import { createSourceFile , cleanup } from '../services/fileService.js';
 import { executePython } from '../services/executionService.js';
-import { executeCpp } from '../services/executionService.js';
+import { executeCpp , executeJava} from '../services/executionService.js';
 
 //so basically the worker here uses the redis connection to talk to redis and send commands which will be used to manipulate the execution queue and extract and perform jobs
 
 const handlers = {
     "cpp":executeCpp,
     "python":executePython,
+    "java":executeJava,
 }
 const worker = new Worker(
     "execution",
