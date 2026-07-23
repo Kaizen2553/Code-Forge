@@ -3,7 +3,7 @@ import {spawn} from 'child_process'
 export const compileCpp = async (filePath) => {
      return new Promise((resolve,reject)=>{
         const parent = path.dirname(filePath);
-        const child = spawn("docker",["run","--rm","-v",`${parent}:/app`,"cpp-runner","bash","-c","g++ main.cpp -o main"])
+        const child = spawn("docker",["run","--rm","--memory=128m","--cpus=1","--network=none","--pids-limit=50","--cap-drop=ALL","-v",`${parent}:/app`,"cpp-runner","bash","-c","g++ main.cpp -o main"])
         const timer = setTimeout(()=>{
           child.kill('SIGKILL');
           reject(new Error('ExecutionTimeOut'));
@@ -31,7 +31,7 @@ export const compileCpp = async (filePath) => {
 export const runCpp = async (filePath,input)=>{
    return new Promise((resolve,reject)=>{
       const parent = path.dirname(filePath);
-      const child = spawn("docker",["run","--rm","-i","-v",`${parent}:/app`,"cpp-runner","bash","-c","./main"]);
+      const child = spawn("docker",["run","--rm","-i","--memory=128m","--cpus=1","--network=none","--pids-limit=50","--cap-drop=ALL","-v",`${parent}:/app`,"cpp-runner","bash","-c","./main"]);
       const timer = setTimeout(()=>{
         child.kill('SIGKILL');
         reject(new Error("ExecutionTimeOut"));

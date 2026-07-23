@@ -4,7 +4,7 @@ import {spawn} from 'child_process';
 export const compileJava = (filePath) => {
     return new Promise((resolve,reject)=>{
          const parent = path.dirname(filePath);
-         const child = spawn("docker",["run","--rm","-v",`${parent}:/app`,"java-runner","bash","-c","javac main.java"]);
+         const child = spawn("docker",["run","--rm","--memory=128m","--cpus=1","--network=none","--pids-limit=50","--cap-drop=ALL","-v",`${parent}:/app`,"java-runner","bash","-c","javac main.java"]);
 
          const timer = setTimeout(()=>{
               child.kill('SIGKILL');
@@ -37,7 +37,7 @@ export const compileJava = (filePath) => {
 export const runJava = (filePath,input) => { 
     return new Promise((resolve,reject)=>{
          const parent = path.dirname(filePath);
-         const child = spawn("docker",["run","--rm","-i","-v",`${parent}:/app`,"java-runner","bash","-c","java main"]);
+         const child = spawn("docker",["run","--rm","-i","--memory=128m","--cpus=1","--network=none","--pids-limit=50","--cap-drop=ALL","-v",`${parent}:/app`,"java-runner","bash","-c","java main"]);
 
          const timer = setTimeout(()=>{
             child.kill('SIGKILL');

@@ -7,7 +7,7 @@ export const executePython = async (filePath,input)=>{
     return new Promise((resolve,reject)=>{
         const parent = path.dirname(filePath);
         //console.log("INPUT:", JSON.stringify(input));
-        const child = spawn("docker",["run","-i","--rm","-v",`${parent}:/app`,"python-runner","python3",path.basename(filePath)]);
+        const child = spawn("docker",["run","-i","--rm","--memory=128m","--cpus=1","--network=none","--pids-limit=50",'--cap-drop=ALL',"-v",`${parent}:/app`,"python-runner","python3",path.basename(filePath)]);
         //-i means interactive and it tells docker to keep the stdin open and forward the input to the process
 
         //-V HERE MEANS MOUNT WHICH IS TO SHARE A SPECIFIC CONTAINER WITH THE CONTAINER IE IT CAN ACCESS THE CONTENTS OF THAT FILE
