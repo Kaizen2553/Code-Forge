@@ -11,6 +11,11 @@ export const executePython = async (filePath,input)=>{
         //-i means interactive and it tells docker to keep the stdin open and forward the input to the process
 
         //-V HERE MEANS MOUNT WHICH IS TO SHARE A SPECIFIC CONTAINER WITH THE CONTAINER IE IT CAN ACCESS THE CONTENTS OF THAT FILE
+        const timer = setTimeout(()=>{
+            child.kill('SIGKILL');
+            reject(new Error("ExecutionTimeOut"));
+        },3000);
+
 
         let stdout = "";
         let stderr = "";
@@ -30,10 +35,12 @@ export const executePython = async (filePath,input)=>{
         })
 
         child.on('error',(error)=>{
+            clearTimeout(timer);
             reject(error);
         })
         //the close event is emitted when the execution of that code is finised
         child.on('close',(code)=>{
+            clearTimeout(timer);
             resolve({
                 stdout,
                 stderr,

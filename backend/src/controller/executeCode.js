@@ -27,7 +27,7 @@ export const executeCode = async (req,res)=>{
            result:result,
         });
     }catch(error){
-        console.log('error occured in executeCode controller');
+        console.log('error occured in executeCode controller',error.message);
         return res.status(500).json({
             success:false,
             message:"internal server error",

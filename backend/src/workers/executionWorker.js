@@ -38,7 +38,7 @@ const worker = new Worker(
             throw err;
         }finally{
             if(filePath){
-                await cleanup(filePath);
+                await cleanup(path.dirname(filePath));
             }
         }
     },
@@ -53,5 +53,5 @@ worker.on('completed',(job)=>{
 });
 
 worker.on('failed',(job,err)=>{
-    throw err;
+     console.log(`job ${job.id} failed`);
 });
